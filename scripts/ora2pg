@@ -183,14 +183,16 @@ unless(opendir(DIR, "$TMP_DIR")) {
 	print "FATAL: can't opendir $TMP_DIR: $!\n";
 	exit 1;
 }
-my @files = grep { $_ =~ /^tmp_ora2pg.*$/ } readdir(DIR);
-closedir DIR;
-foreach (@files) {
-	if (not unlink("$TMP_DIR/$_\n")){
-		print "FATAL: can not remove old temporary files $TMP_DIR/$_\n";
-		exit 1;
-	}
-}
+# (henryhueske) Don't delete old temporary files, because this prevents to execute multiple ora2pg processes at the same host 
+# (other running ora2pg processes can own temporary files which will exit a new ora2pg process at this step)
+# my @files = grep { $_ =~ /^tmp_ora2pg.*$/ } readdir(DIR);
+# closedir DIR;
+# foreach (@files) {
+# 	if (not unlink("$TMP_DIR/$_\n")){
+# 		print "FATAL: can not remove old temporary files $TMP_DIR/$_\n";
+# 		exit 1;
+# 	}
+# }
 
 # Check configuration file
 my $GOES_WITH_DEFAULT = 0;
@@ -332,7 +334,9 @@ unless(opendir(DIR, "$TMP_DIR")) {
 @files = grep { $_ =~ /^tmp_ora2pg.*$/ } readdir(DIR);
 closedir DIR;
 if ($#files >= 0) {
-	print STDERR "\nWARNING: an error occurs during data export. Please check what's happen.\n\n";
+  # (henryhueske) Change original error message in order to have a better description of the error!
+	# print STDERR "\nWARNING: an error occurs during data export. Please check what's happen.\n\n";
+	print STDERR "\nSome ora2pg temporary files exists. Please check the temp directory after all ora2pg processes have ended!\nIf still ora2pg temporary files exists it is possible that an error occured during the export.\n\n"; 
 	exit 2;
 }
 
