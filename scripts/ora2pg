@@ -331,7 +331,7 @@ unless(opendir(DIR, "$TMP_DIR")) {
 	print "FATAL: can't opendir $TMP_DIR: $!\n";
 	exit 1;
 }
-@files = grep { $_ =~ /^tmp_ora2pg.*$/ } readdir(DIR);
+my @files = grep { $_ =~ /^tmp_ora2pg.*$/ } readdir(DIR);
 closedir DIR;
 if ($#files >= 0) {
   # (henryhueske) Change original error message in order to have a better description of the error!
